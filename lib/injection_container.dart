@@ -4,6 +4,7 @@ import 'package:clean_arch/features/posts/data/data_sources/remote_posts_data_so
 import 'package:clean_arch/features/posts/data/repositories/post_repository_imp.dart';
 import 'package:clean_arch/features/posts/domain/use_cases/add_post.dart';
 import 'package:clean_arch/features/posts/domain/use_cases/delete_post.dart';
+import 'package:clean_arch/features/posts/domain/use_cases/get_posts.dart';
 import 'package:clean_arch/features/posts/domain/use_cases/update_post.dart';
 import 'package:clean_arch/features/posts/presentation/bloc/get_posts/posts_bloc.dart';
 import 'package:clean_arch/features/posts/presentation/bloc/post_operation/posts_operations_bloc.dart';
@@ -26,7 +27,7 @@ Future<void> init() async {
       addPostUseCase: sl(), updatePostUseCase: sl(), deletePostUseCase: sl()));
 
   //useCases
-
+  sl.registerLazySingleton(() => GetPostsUseCase(sl()));
   sl.registerLazySingleton(() => AddPostUseCase(sl()));
   sl.registerLazySingleton(() => UpdatePostUseCase(sl()));
   sl.registerLazySingleton(() => DeletePostUseCase(sl()));
@@ -48,12 +49,11 @@ Future<void> init() async {
   //core
 
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImp(sl()));
-  
+
   //external
 
-  final  sharedPreference = await SharedPreferences.getInstance();
+  final sharedPreference = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreference);
-  
   sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(() => InternetConnectionChecker());
 }

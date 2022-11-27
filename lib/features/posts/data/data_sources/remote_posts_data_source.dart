@@ -66,7 +66,7 @@ class RemotePostsDataSourceImp implements RemotePostsDataSource {
 
   @override
   Future<Unit> updatePost(PostModel post) async {
-    String postid = post.id;
+    String postid = post.id.toString();
     final body = {'title': post.title, 'body': post.body};
 
     final response =

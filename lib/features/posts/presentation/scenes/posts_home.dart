@@ -5,28 +5,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entity/post.dart';
 
 class PostsHome extends StatelessWidget {
-
-  late List<Post> posts;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Posts')),
       body: buildBody(),
+      floatingActionButton:
+          FloatingActionButton(onPressed: () {}, child: const Icon(Icons.add)),
     );
   }
 
-  Widget buildBody() {
+  Widget buildPostBody(posts) {
     return Center(
       child: ListView.separated(
-        itemBuilder: (context, index) => buildPostItem(posts[index]),
-        separatorBuilder: (context, index) => buildPostSeperator(),
+        itemBuilder: (context, index) => buildSingleRow(posts[index]),
+        separatorBuilder: (context, index) => buildPostSeparator(),
         itemCount: posts.length,
       ),
     );
   }
 
-  Widget buildPostItem(post) {
+  Widget buildBody() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: BlocBuilder<PostsBloc, PostsState>(
@@ -34,10 +33,12 @@ class PostsHome extends StatelessWidget {
           if (state is LoadingPostState) {
             return buildLoadingProgressWidget();
           } else if (state is LoadedPostState) {
-            posts = state.posts;
-            return buildSingleRow(post);
-          } else if (state is ErrorPostState){
-            return buildErrorWidget();
+            return RefreshIndicator(
+              onRefresh: () => onRefresh(context),
+              child: buildPostBody(state.posts),
+            );
+          } else if (state is ErrorPostState) {
+            return buildErrorWidget(context, state.message);
           }
           return buildLoadingProgressWidget();
         },
@@ -45,22 +46,31 @@ class PostsHome extends StatelessWidget {
     );
   }
 
-  Widget buildPostSeperator() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Container(
-        height: 1,
-        color: Colors.grey[300],
-      ),
+  Future<void> onRefresh(context) async {
+    BlocProvider.of<PostsBloc>(context).add(RefreshPostEvent());
+  }
+
+  Widget buildPostSeparator() {
+    return Divider(
+      color: Colors.grey[300],
+      thickness: 1,
     );
   }
 
   Widget buildSingleRow(Post post) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      textBaseline: TextBaseline.alphabetic,
       children: [
-        Text(post.id),
-        const SizedBox(width: 16,),
+        Text(post.id.toString(),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              fontSize: 18,
+            )),
+        const SizedBox(
+          width: 16,
+        ),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,10 +80,12 @@ class PostsHome extends StatelessWidget {
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
-                  fontSize: 24,
+                  fontSize: 18,
                 ),
               ),
-
+              const SizedBox(
+                height: 8,
+              ),
               Text(
                 post.body,
                 style: const TextStyle(
@@ -97,12 +109,12 @@ class PostsHome extends StatelessWidget {
     );
   }
 
-  Widget buildErrorWidget(BuildContext context) {
+  Widget buildErrorWidget(BuildContext context, msg) {
     return Center(
-      child: Container(
+      child: SizedBox(
         height: MediaQuery.of(context).size.height * 0.3,
-        child: Text('data'),
-      )
+        child: SingleChildScrollView(child: Text(msg)),
+      ),
     );
   }
 }

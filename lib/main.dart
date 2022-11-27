@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => di.sl<PostsBloc>(),
+          create: (_) => di.sl<PostsBloc>()..add(GetAllPostEvent()),
         ),
         BlocProvider(
           create: (_) => di.sl<PostsOperationsBloc>(),
