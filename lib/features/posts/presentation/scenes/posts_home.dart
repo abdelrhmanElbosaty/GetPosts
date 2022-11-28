@@ -1,8 +1,10 @@
 import 'package:clean_arch/features/posts/presentation/bloc/get_posts/posts_bloc.dart';
+import 'package:clean_arch/features/posts/presentation/scenes/post_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entity/post.dart';
+import '../widgets/Widgets.dart';
 
 class PostsHome extends StatelessWidget {
   @override
@@ -10,15 +12,21 @@ class PostsHome extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Posts')),
       body: buildBody(),
-      floatingActionButton:
-          FloatingActionButton(onPressed: () {}, child: const Icon(Icons.add)),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).push(PageRouteBuilder(
+                pageBuilder: (_, animation, secondaryAnimation) => PostDetails(
+                      isUpdatePost: false,
+                    )));
+          },
+          child: const Icon(Icons.add)),
     );
   }
 
   Widget buildPostBody(posts) {
     return Center(
       child: ListView.separated(
-        itemBuilder: (context, index) => buildSingleRow(posts[index]),
+        itemBuilder: (context, index) => buildSingleRow(context,posts[index]),
         separatorBuilder: (context, index) => buildPostSeparator(),
         itemCount: posts.length,
       ),
@@ -57,55 +65,55 @@ class PostsHome extends StatelessWidget {
     );
   }
 
-  Widget buildSingleRow(Post post) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        Text(post.id.toString(),
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-              fontSize: 18,
-            )),
-        const SizedBox(
-          width: 16,
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                post.title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  fontSize: 18,
-                ),
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              Text(
-                post.body,
-                style: const TextStyle(
-                  fontWeight: FontWeight.normal,
-                  color: Colors.grey,
-                  fontSize: 16,
-                ),
-              ),
-            ],
+  Widget buildSingleRow(context, Post post) {
+    return GestureDetector(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Text(post.id.toString(),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                fontSize: 18,
+              )),
+          const SizedBox(
+            width: 16,
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget buildLoadingProgressWidget() {
-    return const Center(
-      child: CircularProgressIndicator(
-        color: Colors.orange,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  post.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  post.body,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.normal,
+                    color: Colors.grey,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
+      onTap: () {
+        Navigator.of(context).push(PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              PostDetails(isUpdatePost: true, post: post),
+        ));
+      },
     );
   }
 

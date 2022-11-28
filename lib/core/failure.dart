@@ -22,8 +22,7 @@ String mapFailureMessage(Failure failure) {
     case EmptyCashFailure:
       return 'Their\'s no cashed data';
     case ServerFailure:
-      return 'u'
-          'UnKnown error, please call the developer';
+      return 'UnKnown error, please call the developer';
     case OfflineFailure:
       return 'Please, Check your internet connection';
     default:

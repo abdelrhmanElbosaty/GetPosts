@@ -26,7 +26,7 @@ class PostRepositoryImp implements PostRepository {
     if (await networkInfo.isConnected) {
       try {
         final PostModel postModel =
-            PostModel(id: post.id, title: post.title, body: post.body);
+            PostModel(title: post.title, body: post.body);
         await remotePostsDataSource.addPost(postModel);
         return const Right(unit);
       } on ServerException {

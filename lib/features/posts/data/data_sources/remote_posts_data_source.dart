@@ -29,7 +29,7 @@ class RemotePostsDataSourceImp implements RemotePostsDataSource {
     final response =
         await client.post(Uri.parse('${baseUrl}posts/'), body: body);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       return Future.value(unit);
     } else {
       throw ServerException();
@@ -66,11 +66,16 @@ class RemotePostsDataSourceImp implements RemotePostsDataSource {
 
   @override
   Future<Unit> updatePost(PostModel post) async {
-    String postid = post.id.toString();
-    final body = {'title': post.title, 'body': post.body};
+    final postId = post.id.toString();
+    final body = {
+      "title": post.title,
+      "body": post.body,
+    };
 
-    final response =
-    await client.post(Uri.parse('${baseUrl}posts/$postid'), body: body);
+    final response = await client.patch(
+      Uri.parse("${baseUrl}posts/$postId"),
+      body: body,
+    );
 
     if (response.statusCode == 200) {
       return Future.value(unit);
